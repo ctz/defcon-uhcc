@@ -29,11 +29,3 @@ index e23f05c..e496d69 100644
      xfree(rndbuf);
      if( DBG_CIPHER )
  	progress('\n');
-@@ -289,6 +293,7 @@ sign(MPI r, MPI s, MPI hash, DSA_secret_key *skey )
- 
-     /* select a random k with 0 < k < q */
-     k = gen_k( skey->q );
-+    log_mpidump("sign k= ", k );
- 
-     /* r = (a^k mod p) mod q */
-     mpi_powm( r, skey->g, k, skey->p );
