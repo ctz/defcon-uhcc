@@ -1,3 +1,9 @@
+"""
+Super-comedy DSA.
+
+You'd have to be mental to use this for anything.
+"""
+
 import random
 from hashlib import sha1, sha256
 

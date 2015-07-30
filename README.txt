@@ -1,20 +1,8 @@
-NAME OF PROJECT: 
+NAME OF PROJECT: RFC6979 is not optional
 WAS THIS A TEAM PROJECT: no
-PROJECT LICENSE: wtfpl/cc0
+PROJECT LICENSE: CC0
 
 CHALLENGE (GPG KEY LEAK / PASSWORD HASHING BACKDOOR): GPG key leak
-
-NOTE: The project description should explain your entry
-      clearly; including the techniques used, why it works,
-      why you think it would go undetected. It may be a
-      summary of a longer document included in the /submission/
-      folder. This description will eventually be published on
-      the Underhanded Crypto Contest web site, along with the
-      contents of the /submission/ folder. This must clearly
-      describe the entry to the judges; to respect the time of
-      our judges, they will not take the time to hunt for the
-      techniques used. The description should be 500 to 2000
-      words.
 
 DESCRIPTION:
 See submission/patch.txt for the underhandedness.  This is for GnuPG 1.4.
@@ -30,8 +18,8 @@ is very low (will vary by group, a few percent seems likely).
 
 Because k is a super-sensitive security parameter, it obviously needs to
 be zeroised instead of left on the heap!  Unfortunately my patch clears the
-buffer when the candidate >=q, as well as at the end.  That means: one every hundred
-or so signatures have a 32-bit entropy k.  This is enough to brute force.
+buffer when the candidate is >=q, as well as at the end.  That means: one every
+hundred or so signatures have a 32-bit entropy k.  This is enough to brute force.
 
 To demonstrate that, submission/recover.py unpicks the resulting pgp signature
 to extract everything needed to recover k from a sample signature in

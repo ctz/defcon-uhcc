@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# generate a shedload of signatures
+# cheat: detect and dump affected signatures in 'sigs'
+
 GPG="../g10/gpg --homedir ./gnupg --no-default-keyring"
 
 count=0

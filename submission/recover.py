@@ -1,3 +1,13 @@
+"""
+Unpick a pgp clear signature in sigs/attack.asc
+
+Verify it, then output commands to run recoverk.c
+to do the recovery work in parallel.
+
+If you change the key being attacked, you will need
+to paste in the new public key and group below.
+"""
+
 import struct
 from StringIO import StringIO as stringio
 from collections import namedtuple

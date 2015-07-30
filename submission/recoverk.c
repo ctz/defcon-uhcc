@@ -35,6 +35,16 @@ static uint32_t unhex(const char *v)
 
 int main(int argc, char **argv)
 {
+  /* 9 arguments (all in hex):
+   *   startk
+   *   stopk    -- bounds for k search
+   *   p
+   *   q
+   *   g        -- group
+   *   y        -- public key
+   *   r
+   *   s        -- signature
+   *   h        -- hash of message */
   assert(argc == 10);
   uint32_t startk = unhex(argv[1]),
            stopk = unhex(argv[2]);
@@ -64,7 +74,7 @@ int main(int argc, char **argv)
   {
     if ((k & 0xfff) == 0) printf("search %08x\n", k);
     BN_set_word(candidatek, k);
-    BN_lshift(candidatek, candidatek, 224);
+    BN_lshift(candidatek, candidatek, 224); // nb entropy is in top bits
 
     // x = ((s * k - h) * rinv) % group.q
     assert(BN_mod_mul(tmp1, sigs, candidatek, q, ctx));
@@ -77,7 +87,7 @@ int main(int argc, char **argv)
     {
       char *ss = BN_bn2hex(tmp2);
       printf("with k = %08x, we found x = %s\n", k, ss);
-      return 1;
+      return 1; // so we can set -e in calling script to stop search!
     }
   }
 
