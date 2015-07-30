@@ -67,7 +67,7 @@ int main(int argc, char **argv)
     BN_lshift(candidatek, candidatek, 224);
 
     // x = ((s * k - h) * rinv) % group.q
-    assert(BN_mul(tmp1, sigs, candidatek, ctx));
+    assert(BN_mod_mul(tmp1, sigs, candidatek, q, ctx));
     assert(BN_sub(tmp1, tmp1, h));
     assert(BN_mod_mul(tmp2, tmp1, rinv, q, ctx));
 
