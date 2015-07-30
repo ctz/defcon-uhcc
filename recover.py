@@ -140,17 +140,19 @@ def decode_dsa_sig_packet(sig):
 
 def search_k(group, mink, maxk, sig, h):
     precomp = dsa.prepare_recover_x(group, sig)
+    print 'search from', '%08x..%08x' % (mink, maxk), 'starting'
 
     for k in xrange(mink, maxk):
-        if (k % 0x400) == 0: print k
         k = k << 224
         x = dsa.recover_x_given_sig_k(group, k, sig, h, precomp)
 
         if pow(group.g, x, group.p) == pubkey:
-            print 'found key, x = ', x
+            print 'found key, x =', x
             break
 
-with open('sig.asc', 'r') as f:
+    print 'search from', '%08x..%08x' % (mink, maxk), 'finished'
+
+with open('sigs/attack.asc', 'r') as f:
     hashfn, msg, sig = read_text_sig(f)
     assert hashfn == 'SHA256'
     dsa_sig = decode_dsa_sig_packet(sig)
@@ -182,6 +184,10 @@ with open('sig.asc', 'r') as f:
     def search_k_from(start):
         search_k(group, start, start + perjob, sig, h)
 
-    pool = multiprocessing.Pool(6)
-    pool.map(search_k_from,
-            xrange(0, 0xffffffff, perjob))
+    for startk in xrange(0, 0xffffffff, perjob):
+        print './recoverk', '%08x %08x' % (startk, startk + perjob), '%x %x %x' % (group.p, group.q, group.g), '%x' % pubkey, '%x %x' % (sig), '%x' % h
+
+    if 0:
+        pool = multiprocessing.Pool(6)
+        pool.map(search_k_from,
+                xrange(0, 0xffffffff, perjob))
