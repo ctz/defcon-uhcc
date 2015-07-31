@@ -25,6 +25,8 @@ OPENPGP_HASH_SHA256 = 8
 OPENPGP_SUBPACKET_SIGCTIME = 2
 OPENPGP_SUBPACKET_ISSUER = 16
 
+# all this crap decodes a limited subset of OpenPGP so we can get the
+# signed message and raw signature out. ugh!
 def read_canon_lines_until(f, end):
     out = []
 
@@ -153,9 +155,12 @@ def search_k(group, mink, maxk, sig, h):
     print 'search from', '%08x..%08x' % (mink, maxk), 'starting'
 
     for k in xrange(mink, maxk):
+        # k value has entropy at top 32 bits, and assume key has 256-bit q
         k = k << 224
         x = dsa.recover_x_given_sig_k(group, k, sig, h, precomp)
 
+        # check if we got a working private key by checking if it yields
+        # our known public value
         if pow(group.g, x, group.p) == pubkey:
             print 'found key, x =', x
             break
@@ -167,7 +172,7 @@ with open('sigs/attack.asc', 'r') as f:
     assert hashfn == 'SHA256'
     dsa_sig = decode_dsa_sig_packet(sig)
 
-    # recover input to dsa
+    # recover input to dsa. weirdshit trailer is documented in rfc4880
     h = sha256()
     h.update(msg)
     h.update(dsa_sig.hashed_hdr)
@@ -190,14 +195,17 @@ with open('sigs/attack.asc', 'r') as f:
     h = long(signed_hash, 16)
     dsa.verify(pub, sig, h)
 
+    # search for k in chunks of this many values
     perjob = 0xffff
     def search_k_from(start):
         search_k(group, start, start + perjob, sig, h)
 
+    # emit invocations of recoverk to do work
     for startk in xrange(0, 0xffffffff, perjob):
         print './recoverk', '%08x %08x' % (startk, startk + perjob), '%x %x %x' % (group.p, group.q, group.g), '%x' % pubkey, '%x %x' % (sig), '%x' % h
 
     if 0:
+        # doing this in python is possible, but really slow
         pool = multiprocessing.Pool(6)
         pool.map(search_k_from,
                 xrange(0, 0xffffffff, perjob))
